@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.example.appengine.vertxhello;
 
 import io.vertx.core.Vertx;
@@ -29,44 +28,44 @@ import org.junit.runner.RunWith;
 @RunWith(VertxUnitRunner.class)
 public class ApplicationTest {
 
-  private static Vertx vertx;
+    private static Vertx vertx;
 
-  @BeforeClass
-  public static void setUp(TestContext ctx) {
-    vertx = Vertx.vertx();
-    startMetadataServer(ctx);
-    vertx.deployVerticle(new Application(), ctx.asyncAssertSuccess());
-  }
+    @BeforeClass
+    public static void setUp(TestContext ctx) {
+        vertx = Vertx.vertx();
+        startMetadataServer(ctx);
+        vertx.deployVerticle(new Application(), ctx.asyncAssertSuccess());
+    }
 
-  // Start a mock metadata server
-  private static void startMetadataServer(TestContext ctx) {
-    Application.METADATA_HOST = "localhost";
-    Application.METADATA_PORT = 8081;
-    vertx
-        .createHttpServer()
-        .requestHandler(
-            req -> {
-              req.response().end("this-is-your-project");
-            })
-        .listen(8081, ctx.asyncAssertSuccess());
-  }
+    // Start a mock metadata server
+    private static void startMetadataServer(TestContext ctx) {
+        Application.METADATA_HOST = "localhost";
+        Application.METADATA_PORT = 8081;
+        vertx
+                .createHttpServer()
+                .requestHandler(
+                        req -> {
+                            req.response().end("this-is-your-project");
+                        })
+                .listen(8081, ctx.asyncAssertSuccess());
+    }
 
-  @AfterClass
-  public static void tearDown(TestContext ctx) {
-    vertx.close(ctx.asyncAssertSuccess());
-  }
+    @AfterClass
+    public static void tearDown(TestContext ctx) {
+        vertx.close(ctx.asyncAssertSuccess());
+    }
 
-  @Test
-  public void test(TestContext ctx) {
-    WebClient client = WebClient.create(vertx);
-    client
-        .get(8080, "localhost", "/")
-        .expect(ResponsePredicate.SC_OK)
-        .send(
-            ctx.asyncAssertSuccess(
-                response -> {
-                  ctx.assertEquals(
-                      "Hello World! from this-is-your-project", response.bodyAsString());
-                }));
-  }
+    @Test
+    public void test(TestContext ctx) {
+        WebClient client = WebClient.create(vertx);
+        client
+                .get(8080, "localhost", "/")
+                .expect(ResponsePredicate.SC_OK)
+                .send(
+                        ctx.asyncAssertSuccess(
+                                response -> {
+                                    ctx.assertEquals(
+                                            "Hello World! from this-is-your-project", response.bodyAsString());
+                                }));
+    }
 }

@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.example.appengine.vertxhello;
 
 import io.vertx.core.Vertx;
 
 public class Main {
 
-  public static void main(String[] args) {
-
-    Vertx vertx = Vertx.vertx();
-    vertx.deployVerticle(new Application());
-  }
+    public static void main(String[] args) {
+        Vertx vertx = Vertx.vertx();
+        vertx.deployVerticle(new Application());
+    }
 }

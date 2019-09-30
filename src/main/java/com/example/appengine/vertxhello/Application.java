@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.example.appengine.vertxhello;
 
 import io.vertx.core.AbstractVerticle;
@@ -27,38 +26,38 @@ import io.vertx.ext.web.client.predicate.ResponsePredicate;
 
 public class Application extends AbstractVerticle {
 
-  static String METADATA_HOST = "metadata.google.internal";
-  static int METADATA_PORT = 80;
-  WebClient webClient;
+    static String METADATA_HOST = "metadata.google.internal";
+    static int METADATA_PORT = 80;
+    WebClient webClient;
 
-  @Override
-  public void start(Future<Void> startFuture) {
-    webClient = WebClient.create(vertx);
-    Router router = Router.router(vertx);
-    router.route().handler(this::handleDefault);
+    @Override
+    public void start(Future<Void> startFuture) {
+        webClient = WebClient.create(vertx);
+        Router router = Router.router(vertx);
+        router.route().handler(this::handleDefault);
 
-    vertx
-        .createHttpServer()
-        .requestHandler(router)
-        .listen(8080, ar -> startFuture.handle(ar.mapEmpty()));
-  }
+        vertx
+                .createHttpServer()
+                .requestHandler(router)
+                .listen(8080, ar -> startFuture.handle(ar.mapEmpty()));
+    }
 
-  private void handleDefault(RoutingContext routingContext) {
-    webClient
-        .get(METADATA_PORT, METADATA_HOST, "/computeMetadata/v1/project/project-id")
-        .putHeader("Metadata-Flavor", "Google")
-        .expect(ResponsePredicate.SC_OK)
-        .send(
-            res -> {
-              if (res.succeeded()) {
-                HttpResponse<Buffer> response = res.result();
-                routingContext
-                    .response()
-                    .putHeader("content-type", "text/html")
-                    .end("Hello World! from " + response.body());
-              } else {
-                routingContext.fail(res.cause());
-              }
-            });
-  }
+    private void handleDefault(RoutingContext routingContext) {
+        webClient
+                .get(METADATA_PORT, METADATA_HOST, "/computeMetadata/v1/project/project-id")
+                .putHeader("Metadata-Flavor", "Google")
+                .expect(ResponsePredicate.SC_OK)
+                .send(
+                        res -> {
+                            if (res.succeeded()) {
+                                HttpResponse<Buffer> response = res.result();
+                                routingContext
+                                        .response()
+                                        .putHeader("content-type", "text/html")
+                                        .end("Hello World! from " + response.body());
+                            } else {
+                                routingContext.fail(res.cause());
+                            }
+                        });
+    }
 }
