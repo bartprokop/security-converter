@@ -23,6 +23,8 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.predicate.ResponsePredicate;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.StaticHandler;
 
 public class Application extends AbstractVerticle {
 
@@ -34,7 +36,12 @@ public class Application extends AbstractVerticle {
     public void start(Future<Void> startFuture) {
         webClient = WebClient.create(vertx);
         Router router = Router.router(vertx);
-        router.route().handler(this::handleDefault);
+        
+//        router.post().handler(BodyHandler.create());        
+        router.post("/jwk-to-pem").handler(JwkToPem::handle);        
+        router.route().handler(StaticHandler.create("html"));
+        
+//        router.route().handler(this::handleDefault);
 
         vertx
                 .createHttpServer()
