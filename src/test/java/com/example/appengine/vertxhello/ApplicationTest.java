@@ -35,21 +35,8 @@ public class ApplicationTest {
     @BeforeClass
     public static void setUp(TestContext ctx) {
         vertx = Vertx.vertx();
-        startMetadataServer(ctx);
+//        startMetadataServer(ctx);
         vertx.deployVerticle(new Application(), ctx.asyncAssertSuccess());
-    }
-
-    // Start a mock metadata server
-    private static void startMetadataServer(TestContext ctx) {
-        Application.METADATA_HOST = "localhost";
-        Application.METADATA_PORT = 8081;
-        vertx
-                .createHttpServer()
-                .requestHandler(
-                        req -> {
-                            req.response().end("this-is-your-project");
-                        })
-                .listen(8081, ctx.asyncAssertSuccess());
     }
 
     @AfterClass

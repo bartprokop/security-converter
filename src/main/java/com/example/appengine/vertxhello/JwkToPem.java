@@ -4,6 +4,7 @@
  */
 package com.example.appengine.vertxhello;
 
+import static dev.prokop.vertx.jwt.SecurityToolbox.pem;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import java.math.BigInteger;
@@ -19,7 +20,6 @@ import java.util.Base64;
  */
 public class JwkToPem {
 
-    private final static Base64.Encoder ENCODER = Base64.getMimeEncoder();
     private final static Base64.Decoder DECODER = Base64.getUrlDecoder();
 
     public static PublicKey fromJwk(JsonObject jwk) throws GeneralSecurityException {
@@ -35,29 +35,22 @@ public class JwkToPem {
         return keyFactory.generatePublic(rsaPublicKeySpec);
     }
 
-    public static String toPem(PublicKey publicKey) {
-        byte[] der = publicKey.getEncoded();
-        StringBuilder pem = new StringBuilder();
-
-        pem.append("-----BEGIN PUBLIC KEY-----").append('\n');
-        pem.append(ENCODER.encodeToString(der));
-        pem.append('\n').append("-----END PUBLIC KEY-----");
-
-        return pem.toString();
+    public static void handle(RoutingContext routingContext) {
+        try {
+            JsonObject body = routingContext.getBodyAsJson();
+            PublicKey fromJwk = fromJwk(body);
+            String toPem = pem(fromJwk);
+            routingContext.response().end(toPem);
+        } catch (Exception e) {
+//                routingContext.fail(e);
+            routingContext.response().end(exceptionToString(e));
+        }
     }
 
-    public static void handle(RoutingContext routingContext) {
-        routingContext.request().bodyHandler(buffer -> {
-            try {
-                JsonObject body = new JsonObject(buffer);
-                PublicKey fromJwk = fromJwk(body);
-                String toPem = toPem(fromJwk);
-                System.out.println(toPem);
-                routingContext.response().end(toPem);
-            } catch (Exception e) {
-                routingContext.fail(e);
-            }
-        });
+    public static String exceptionToString(final Exception exception) {
+        final StringBuilder retVal = new StringBuilder();
+        retVal.append(exception.toString()); // do better in future
+        return retVal.toString();
     }
 
 }

@@ -17,7 +17,7 @@ package com.example.appengine.vertxhello;
 
 import io.vertx.core.Vertx;
 
-public class Main {
+public class EntryPoint {
 
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
