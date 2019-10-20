@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.appengine.vertxhello;
+package dev.prokop.appengine.seconv;
 
+import com.example.appengine.vertxhello.Application;
 import io.vertx.core.Vertx;
 
 public class EntryPoint {

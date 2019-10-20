@@ -96,7 +96,7 @@ limitations under the License.
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.example.appengine.vertxhello.Main</mainClass>
+                            <mainClass>dev.prokop.appengine.seconv.EntryPoint</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

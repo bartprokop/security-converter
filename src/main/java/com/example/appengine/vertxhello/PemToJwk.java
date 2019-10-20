@@ -18,13 +18,10 @@ public class PemToJwk {
     public static void handle(RoutingContext routingContext) {
         try {
             String body = routingContext.getBodyAsString();
-            System.out.println(body);
-            System.out.println(body.length());
             Key pem = SecurityToolbox.pem(body);
             JWK jwk = new JWK(pem);
             routingContext.response().end(jwk.getJwk().encodePrettily());
         } catch (Exception e) {
-            e.printStackTrace();
             routingContext.response().end(exceptionToString(e));
         }
     }

@@ -17,17 +17,13 @@ package dev.prokop.vertx.jwt;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import org.bouncycastle.jce.provider.PEMUtil;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
@@ -53,13 +49,20 @@ public class SecurityToolbox {
 
     public static Key pem(String key) {
         try {
-            System.out.println(key);
             StringReader keyReader = new StringReader(key);
             PemReader pemReader = new PemReader(keyReader);
-            PemObject readPemObject = pemReader.readPemObject();
-            EncodedKeySpec spec = new PKCS8EncodedKeySpec(readPemObject.getContent(), "RSA");
-            KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
-            return kf.generatePrivate(spec);
+            PemObject pemObject = pemReader.readPemObject();
+            if ("RSA PRIVATE KEY".equals(pemObject.getType())) {
+                EncodedKeySpec spec = new PKCS8EncodedKeySpec(pemObject.getContent(), "RSA");
+                KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+                return kf.generatePrivate(spec);
+            } else if ("PUBLIC KEY".equals(pemObject.getType())) {
+                X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(pemObject.getContent(), "RSA");
+                KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
+                return kf.generatePublic(x509EncodedKeySpec);
+            } else {
+                throw new IllegalArgumentException("Unable to process: " + pemObject.getType());
+            }
         } catch (GeneralSecurityException | IOException e) {
             throw new RuntimeException(e);
         }
